@@ -1,0 +1,64 @@
+=encoding utf-8
+
+=for stopwords
+
+=head1 NAME
+
+Math::Normalize::Range - Normalize within specified range
+
+=head1 SYNOPSIS
+
+  use Math::Normalize::Range;
+
+  my $num = Math::Normalize::Range->new(10.0, {
+      target_min => 1000, target_max => 10000
+  });
+
+  $num->normalize(min => 5, max => 20);
+
+=head1 DESCRIPTION
+
+Math::Normalize::Range normalizes number to specified range
+Default range is 0.0 .. 1.0. You can normalize any range.
+
+=head1 METHOD
+
+=head2 Class Method
+
+=head3 C<< Math::Normalize::Range->new($num, $option) >>
+
+I<$options> may be:
+
+=over
+
+=item target_min
+
+Target minimum number. Default is 0.
+
+=item target_max
+
+Target maximum number. Default is 1.
+
+=back
+
+=head2 Instance Method
+
+=head3 C<< $number->normalize(min => $min, max => $max) >>
+
+Normalize number in range(C<$min>..C<$max>) to target range.
+
+=head1 AUTHOR
+
+Syohei YOSHIDA E<lt>syohex@gmail.comE<gt>
+
+=head1 COPYRIGHT
+
+Copyright 2012- Syohei YOSHIDA
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
+
+=head1 SEE ALSO
+
