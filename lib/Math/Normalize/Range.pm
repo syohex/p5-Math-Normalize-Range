@@ -39,7 +39,7 @@ sub normalize {
     my ($min, $max) = @args{'min', 'max'};
     _validate_min_max($min, $max);
 
-    unless ($num > $min && $num < $max) {
+    unless ($num >= $min && $num <= $max) {
         Carp::croak("Number should be min($min) < $num < max($max)");
     }
 
