@@ -10,11 +10,11 @@ Math::Normalize::Range - Normalize within specified range
 
   use Math::Normalize::Range;
 
-  my $num = Math::Normalize::Range->new(10.0, {
+  my $num = Math::Normalize::Range->new(
       target_min => 1000, target_max => 10000
-  });
+  );
 
-  $num->normalize(min => 5, max => 20);
+  $num->normalize(10, {min => 5, max => 20});
 
 =head1 DESCRIPTION
 
@@ -25,9 +25,9 @@ Default range is 0.0 .. 1.0. You can normalize any range.
 
 =head2 Class Method
 
-=head3 C<< Math::Normalize::Range->new($num, $option) >>
+=head3 C<< Math::Normalize::Range->new(%args) >>
 
-I<$options> may be:
+I<%args> is:
 
 =over
 
@@ -43,9 +43,9 @@ Target maximum number. Default is 1.
 
 =head2 Instance Method
 
-=head3 C<< $number->normalize(min => $min, max => $max) >>
+=head3 C<< $number->normalize($num, {min => $min, max => $max}) >>
 
-Normalize number in range(C<$min>..C<$max>) to target range.
+Normalize C<$num> in range(C<$min>..C<$max>) to target range.
 
 =head1 AUTHOR
 

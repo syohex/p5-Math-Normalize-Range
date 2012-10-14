@@ -8,35 +8,33 @@ our $VERSION = '0.01';
 use Carp ();
 
 sub new {
-    my ($class, $num, $args) = @_;
+    my ($class, %args) = @_;
 
-    unless (defined $num) {
-        Carp::croak("Undefined number");
-    }
-
-    my $target_min = $args->{target_min} || 0;
-    my $target_max = $args->{target_max} || 1;
+    my $target_min = $args{target_min} || 0;
+    my $target_max = $args{target_max} || 1;
 
     _validate_min_max($target_min, $target_max);
 
     bless {
-        num => $num,
         target_min => $target_min,
         target_max => $target_max,
     }, $class;
 }
 
 sub normalize {
-    my ($self, %args) = @_;
+    my ($self, $num, $args) = @_;
+
+    unless (defined $num) {
+        Carp::croak("number is not defined");
+    }
 
     for my $key (qw/min max/) {
-        unless (exists $args{$key}) {
+        unless (exists $args->{$key}) {
             Carp::croak("missing mandatory parameter '$key'");
         }
     }
 
-    my $num = $self->{num};
-    my ($min, $max) = @args{'min', 'max'};
+    my ($min, $max) = @{$args}{'min', 'max'};
     _validate_min_max($min, $max);
 
     unless ($num >= $min && $num <= $max) {
@@ -69,11 +67,11 @@ Math::Normalize::Range - Normalize within specified range
 
   use Math::Normalize::Range;
 
-  my $num = Math::Normalize::Range->new(10.0, {
+  my $num = Math::Normalize::Range->new(
       target_min => 1000, target_max => 10000
-  });
+  );
 
-  $num->normalize(min => 5, max => 20);
+  $num->normalize(10, {min => 5, max => 20});
 
 =head1 DESCRIPTION
 
@@ -84,9 +82,9 @@ Default range is 0.0 .. 1.0. You can normalize any range.
 
 =head2 Class Method
 
-=head3 C<< Math::Normalize::Range->new($num, $option) >>
+=head3 C<< Math::Normalize::Range->new(%args) >>
 
-I<$options> may be:
+I<%args> is:
 
 =over
 
@@ -102,9 +100,9 @@ Target maximum number. Default is 1.
 
 =head2 Instance Method
 
-=head3 C<< $number->normalize(min => $min, max => $max) >>
+=head3 C<< $number->normalize($num, {min => $min, max => $max}) >>
 
-Normalize number in range(C<$min>..C<$max>) to target range.
+Normalize C<$num> in range(C<$min>..C<$max>) to target range.
 
 =head1 AUTHOR
 
