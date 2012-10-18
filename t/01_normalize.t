@@ -22,6 +22,14 @@ subtest 'normalize(specified range)' => sub {
     is $got, 50, 'normalize specified range';
 };
 
+subtest 'normalize(ArrayRef)' => sub {
+    my $num = Math::Normalize::Range->new(target_min => 0, target_max=>1000);
+    my @gots = $num->normalize([0, 25, 50]);
+    is $gots[0], 0, 'minimum number';
+    is $gots[1], 500, 'middle number';
+    is $gots[2], 1000, 'maximum number';
+};
+
 subtest 'invalid constructor' => sub {
     eval {
         Math::Normalize::Range->new(target_min => 1, target_max => 0);

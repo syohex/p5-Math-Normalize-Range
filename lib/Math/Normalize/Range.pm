@@ -6,6 +6,7 @@ use 5.008_001;
 our $VERSION = '0.01';
 
 use Carp ();
+use List::MoreUtils qw/minmax/;
 
 sub new {
     my ($class, %args) = @_;
@@ -28,21 +29,38 @@ sub normalize {
         Carp::croak("number is not defined");
     }
 
-    for my $key (qw/min max/) {
-        unless (exists $args->{$key}) {
-            Carp::croak("missing mandatory parameter '$key'");
+    my ($min, $max);
+    if (ref $num eq 'ARRAY') {
+        ($min, $max) = minmax(@{$num});
+    } elsif (!ref $num) {
+        for my $key (qw/min max/) {
+            unless (exists $args->{$key}) {
+                Carp::croak("missing mandatory parameter '$key'");
+            }
         }
+
+        ($min, $max) = @{$args}{'min', 'max'};
+        _validate_min_max($min, $max);
+
+        unless ($num >= $min && $num <= $max) {
+            Carp::croak("Number should be min($min) < $num < max($max)");
+        }
+
+        $num = [$num];
     }
 
-    my ($min, $max) = @{$args}{'min', 'max'};
-    _validate_min_max($min, $max);
-
-    unless ($num >= $min && $num <= $max) {
-        Carp::croak("Number should be min($min) < $num < max($max)");
+    my @retvals;
+    my ($target_min, $target_max) = @{$self}{'target_min', 'target_max'};
+    for my $n (@{$num}) {
+        my $unit = ($n - $min) / ($max - $min);
+        push @retvals, ($unit * ($target_max - $target_min) + $target_min);
     }
 
-    my $unit = ($num - $min) / ($max - $min);
-    return $unit * ($self->{target_max} - $self->{target_min}) + $self->{target_min};
+    if (wantarray) {
+        return @retvals;
+    } else {
+        return $retvals[0];
+    }
 }
 
 sub _validate_min_max {
@@ -72,6 +90,7 @@ Math::Normalize::Range - Normalize within specified range
   );
 
   $num->normalize(10, {min => 5, max => 20});
+  $num->normalize([2, 14, 27, 9]);
 
 =head1 DESCRIPTION
 
@@ -103,6 +122,10 @@ Target maximum number. Default is 1.
 =head3 C<< $number->normalize($num, {min => $min, max => $max}) >>
 
 Normalize C<$num> in range(C<$min>..C<$max>) to target range.
+
+=head3 C<< $number->normalize(\@nums) >>
+
+Same as above except C<$min> and C<$max> are chosen from C<@nums>.
 
 =head1 AUTHOR
 
