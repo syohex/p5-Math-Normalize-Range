@@ -30,9 +30,11 @@ sub normalize {
     }
 
     my ($min, $max);
-    if (ref $num eq 'ARRAY') {
+    my @nums;
+    if (ref $num eq 'ARRAY' && !defined $args) {
         ($min, $max) = minmax(@{$num});
-    } elsif (!ref $num) {
+        @nums = @{$num};
+    } else {
         for my $key (qw/min max/) {
             unless (exists $args->{$key}) {
                 Carp::croak("missing mandatory parameter '$key'");
@@ -42,16 +44,17 @@ sub normalize {
         ($min, $max) = @{$args}{'min', 'max'};
         _validate_min_max($min, $max);
 
-        unless ($num >= $min && $num <= $max) {
-            Carp::croak("Number should be min($min) < $num < max($max)");
+        @nums = ref $num eq 'ARRAY' ? @{$num} : ($num);
+        for my $n (@nums) {
+            unless ($n >= $min && $n <= $max) {
+                Carp::croak("Number should be min($min) < $num < max($max)");
+            }
         }
-
-        $num = [$num];
     }
 
     my @retvals;
     my ($target_min, $target_max) = @{$self}{'target_min', 'target_max'};
-    for my $n (@{$num}) {
+    for my $n (@nums) {
         my $unit = ($n - $min) / ($max - $min);
         push @retvals, ($unit * ($target_max - $target_min) + $target_min);
     }

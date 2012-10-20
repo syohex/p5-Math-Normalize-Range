@@ -30,6 +30,13 @@ subtest 'normalize(ArrayRef)' => sub {
     is $gots[2], 1000, 'maximum number';
 };
 
+subtest 'normalize(ArrayRef and Specified Range)' => sub {
+    my $num = Math::Normalize::Range->new(target_min => 0, target_max=>1000);
+    my @gots = $num->normalize([25, 50], {min => 25, max => 50});
+    is $gots[0], 0, 'minimum number';
+    is $gots[1], 1000, 'maximum number';
+};
+
 subtest 'invalid constructor' => sub {
     eval {
         Math::Normalize::Range->new(target_min => 1, target_max => 0);
@@ -65,6 +72,12 @@ subtest 'invalid normalize' => sub {
         $num->normalize(200, {min => 20, max => 100});
     };
     like $@, qr/Number should be min/, "num over range max";
+
+    eval {
+        my $num = Math::Normalize::Range->new();
+        $num->normalize([0, 20], {min => 20, max => 100});
+    };
+    like $@, qr/Number should be min/, "num over range min(with ArrayRef)";
 };
 
 done_testing;
